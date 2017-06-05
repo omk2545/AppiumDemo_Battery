@@ -143,6 +143,8 @@ return 3;
 
 	}
 
+
+
 	public boolean isMusicPlaying(){
 
 		driver.manage().timeouts().implicitlyWait(15, SECONDS);
@@ -352,8 +354,12 @@ return isElementPresent;
 		double y = dimension.getWidth() * 0.5 ;
 
 
-		TouchAction action = new TouchAction(driver);
-		action.tap(((int) x), ((int) y)).perform();
+		for (int i = 1; i<=25;i++) {
+			System.out.println(driver.currentActivity());
+			TouchAction action = new TouchAction(driver);
+			action.tap(((int) x), ((int) y)).perform();
+		}
+
 
 
 
@@ -455,7 +461,13 @@ public void clickOnlearnInteractions(){
 				jacket.click();
 				//test.log(LogStatus.PASS,"Jacket Found");
                 System.out.println("Jacket found");
-                return true;
+
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				return true;
 			}else{
 
 			//	test.log(LogStatus.PASS,"Jacket not  Found");

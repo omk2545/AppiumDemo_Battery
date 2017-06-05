@@ -1,18 +1,20 @@
 package com.google.jacquard.test.testcases;
 
-import com.google.jacquard.test.TestBase;
-import com.google.jacquard.utils.CommadLineExec;
 import com.google.jacquard.helper.Constants;
 import com.google.jacquard.helper.JaquardHelper;
+import com.google.jacquard.test.TestBase;
+import com.google.jacquard.utils.CommadLineExec;
 import com.relevantcodes.extentreports.ExtentTest;
 import com.relevantcodes.extentreports.LogStatus;
 import io.appium.java_client.android.AndroidDriver;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 /**
- * Created by omkar on 24-05-2017.
+ * Created by omkar on 31-05-2017.
  */
-public class OnBoardingDemoTest extends TestBase {
+public class Demo extends TestBase {
 
     CommadLineExec commadLineExec;
     AndroidDriver JaquardApp;
@@ -22,42 +24,40 @@ public class OnBoardingDemoTest extends TestBase {
 
     ExtentTest test;
     JaquardHelper jaquardHelper;
-    String testName = "UserOnboardingScenario";
-
-    @BeforeSuite
-    public void testBeforeSuite(){
-        System.out.println("before suite");
-
-
-    }
+    String testName = "UserOnboardingDemo";
 
     @BeforeMethod
     public void init() throws Exception {
 
-        System.out.println("before method");
+       test = createTest(testName);
+       commadLineExec = new CommadLineExec(test);
+        commadLineExec.clearAllappdata();
+        commadLineExec.initBatteryData();
         JaquardApp = createDeviceInstance(Constants.portNo, Constants.deviceName, Constants.appPackage,
                 Constants.appActivity);
-
-
+        jaquardHelper = new JaquardHelper(JaquardApp, test);
     }
 
 
     @Test
-    public void testOnboarding_Demo() throws Exception {
+    public void demoJacquardApp() {
 
-        String name = Thread.currentThread().getStackTrace()[1].getMethodName();
-        test= createTest(name);
-        System.out.println("Test: " +name);
-        jaquardHelper = new JaquardHelper(JaquardApp, test);
-commadLineExec = new CommadLineExec(test);
-commadLineExec.clearAllappdata();
+//        String name = Thread.currentThread().getStackTrace()[1].getMethodName();
+//        test= createTest(name);
+//        System.out.println("Test: " +name);
+
+
+
+//        jaquardHelper = new JaquardHelper(JaquardApp, test);
+//        commadLineExec = new CommadLineExec(test);
+//        commadLineExec.clearAllappdata();
 
 
         test.log(LogStatus.INFO, "### Battery before the app launch ### ** Battery " + commadLineExec.getcurrentBatteryLevel() + " ** Battery " + commadLineExec.getcurrentBatteryTemperature() + "** CPU usage: " + commadLineExec.getcurrenCPUUsage());
 
         jaquardHelper.launchJaquard();
         jaquardHelper.keepApplicationInTheForeGround();
-                 jaquardHelper.takeApplicationinBackground(0.2, "  splash screen ");
+       // jaquardHelper.takeApplicationinBackground(0.2, "  splash screen ");
 
         jaquardHelper.clickOngetStated();
 //        test.log(LogStatus.INFO, "User is on the ##### splash screen  ####");
@@ -66,7 +66,7 @@ commadLineExec.clearAllappdata();
         jaquardHelper.clickonEnableJacquard();
 
         jaquardHelper.clickOnTagIsReady();
-        jaquardHelper.takeApplicationinBackground(0.3, " Activate tag ");
+        //jaquardHelper.takeApplicationinBackground(0.3, " Activate tag ");
 
         jaquardHelper.clickOnAcceptAgrement();
         //jaquardHelper.takeApplicationinBackground(0.5, " User acceptance agreement screen ");
@@ -85,7 +85,7 @@ commadLineExec.clearAllappdata();
 
                 test.log(LogStatus.INFO, "The user is on the ##### learn interactions screen #####");;
 
-                for (int i = 1; i < 3; i++) {
+                for (int i = 1; i < 5; i++) {
 
 
                     if (i%2 ==0 ) {
@@ -117,41 +117,33 @@ commadLineExec.clearAllappdata();
         }
 
 
+
+
+
     }
 
 
-   // @Test(dependsOnMethods = { "testOnboarding_Demo" })
-    public void testOnboarding_Extensive(){
-   String name = Thread.currentThread().getStackTrace()[1].getMethodName();
-        System.out.println("Test: "+ name);
-        test= createTest(name);
+    @AfterMethod
+    public void tearDown() {
+        /**Code to close Appium driver Instance **/
 
-        System.out.println("Inside test2");
-        jaquardHelper = new JaquardHelper(JaquardApp, test);
-        jaquardHelper.launchJaquard();
-        test.log(LogStatus.FAIL,"Test 2 fails");
+        JaquardApp.quit();
+        test.log(LogStatus.PASS, "Test Completed Successfully  !!!");
+        test.log(LogStatus.PASS, "### Battery Stats after the test completion ### ** Battery " + commadLineExec.getcurrentBatteryLevel() + " ** Battery " + commadLineExec.getcurrentBatteryTemperature() + "** CPU usage: " + commadLineExec.getcurrenCPUUsage());
+
+        /**Code to print batteryData to a file**/
+        commadLineExec.printBatteryData(testName);
+
+
+        JaquardApp.quit();
         extentReports.endTest(test);
-    }
-
-@AfterMethod
-public void afterMethod(){
-    System.out.println("after method");
-    JaquardApp.quit();
-}
-
-    @AfterSuite
-    public void afterSuite(){
-
-        System.out.println("after suite");
         extentReports.flush();
 
+        /**Code to  generate battery Historian Graph**/
+        commadLineExec.generateBatteryHistorianGraph(testName);
+
+
     }
 
 
-
-
-    }
-
-
-
-
+}

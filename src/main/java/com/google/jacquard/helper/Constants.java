@@ -33,7 +33,7 @@
 
 
 
-
+		public static final String blushin = "//android.widget.RelativeLayout[@index='1']/android.widget.ImageButton";
 
 		
 		
